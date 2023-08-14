@@ -1,0 +1,10 @@
+# This is a boilerplate parameters config generated for pipeline 'data_aug'
+# using Kedro 0.18.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.3/kedro_project_setup/configuration.html#parameters
+augmentation:
+  use_crop: false
+  use_synonyms_replacement: false
+  use_shuffling: true
+  split_ratio: 0.3

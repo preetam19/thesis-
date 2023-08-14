@@ -1,0 +1,50 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
+
+train_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/updated_sheet.csv
+train_data_llt:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/llt.csv
+post_data_train:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/df.csv
+post_data_test:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/df.csv
+post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/df_tx_pre.csv
+data_aug:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/df_aug.csv
+data_aug_final_train:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/df_aug_final_train.csv
+
+preprocess_post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/preprcess_df.csv
+# eval_data_1:
+#   type: pandas.CSVDataSet
+#   filepath: data/01_raw/updated_sheet.csv
+
+# eval_data_1_2:
+#   type: pandas.CSVDataSet
+#   filepath: data/01_raw/updated_sheet.csv
+train_post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/train_post_data_text_pre.csv
+test_post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/test_post_data_text_pre.csv
+train_dataset:
+  type: kedro.extras.datasets.pickle.PickleDataSet
+  filepath: data/03_primary/train_dataset.pkl
+
+test_dataset:
+  type: kedro.extras.datasets.pickle.PickleDataSet
+  filepath: data/03_primary/test_dataset.pkl
