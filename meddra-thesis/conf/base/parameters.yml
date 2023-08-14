@@ -1,13 +1,10 @@
 pretrained:
-  model_name: "bert-base-uncased"
-  options:
-    output_hidden_states: True
-  soc_label_weight: 1
-  pt_label_weight: 2
-  llt_label_weight: 3
+  model_name: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
   cols: ["soc", "pt", "llt"]
-  hidden_sizes_pt: [512, 256]
-  hidden_sizes_llt: [1024, 512]
-  epochs: 2
-  batch_size: 128
+  soc_epochs: 0
+  pt_epochs : 0
+  llt_epochs : 1
+  epochs: 1
+  batch_size: 512
   path: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
+  complexity: 2
