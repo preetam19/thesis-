@@ -47,7 +47,7 @@ class MeddraDataset(Dataset):
 
 def prepare_meddra_dataset(df_train, config):
     df_train = pd.DataFrame(df_train)
-    tokenizer = AutoTokenizer.from_pretrained(config['path'])
+    tokenizer = AutoTokenizer.from_pretrained(config['tokenizer_path'])
     df_train_array = df_train.to_numpy()
     return MeddraDataset(df_train_array, tokenizer)
 

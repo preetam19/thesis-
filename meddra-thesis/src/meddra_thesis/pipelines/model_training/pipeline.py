@@ -12,7 +12,7 @@ def create_pipeline(**kwargs):
         [ 
         node(
                 func=calculate_weights,
-                inputs=["train_post_data_text_pre", "params:pretrained"],
+                inputs=["train_post_data_text_pre", "params:training_parameters"],
                 outputs={"soc_weights": "soc_weights", 
                         "pt_weights": "pt_weights", 
                         "llt_weights": "llt_weights"},
@@ -20,53 +20,60 @@ def create_pipeline(**kwargs):
             ),
             node(
                 func=create_base_model, 
-                inputs=["params:pretrained", "soc_weights"],
+                inputs=["params:soc_model", "soc_weights"],
                 outputs="soc_model",
                 name="create_soc_model_node"
             ),
             node(
                 func=prepare_meddra_dataset,
-                inputs=["train_post_data_text_pre", "params:pretrained"],  
+                inputs=["train_post_data_text_pre", "params:training_parameters"],  
                 outputs="meddra_dataset_train",
                 name="prepare_meddra_dataset_node"
                 ),
             node(
                 func=create_dataloader,
-                inputs=["meddra_dataset_train", "params:pretrained"],  # Assuming you have DataLoader config in params
+                inputs=["meddra_dataset_train", "params:training_parameters"],  # Assuming you have DataLoader config in params
                 outputs="data_loader_train",
                 name="create_dataloader_node"
             ),
             node(
                 func=create_extended_model,
-                inputs=["params:pretrained", "pt_weights", "soc_weights"],
+                inputs=["params:pt_model", "pt_weights", "soc_weights"],
                 outputs="pt_model",
                 name="create_pt_model_node"
             ),
-            node(
-                func=create_extended_model,
-                inputs=["params:pretrained", "llt_weights", "pt_weights", "soc_weights"],
-                outputs="llt_model",
-                name="create_llt_model_node"
-            ),
+            # node(
+            #     func=create_extended_model,
+            #     inputs=["params:llt_model", "llt_weights", "pt_weights", "soc_weights"],
+            #     outputs="llt_model",
+            #     name="create_llt_model_node"
+            # ),
             node(
                 func=train_single_model,
-                inputs=["soc_model", "params:pretrained", "data_loader_train", "soc_weights"],
+                inputs=["soc_model", "params:soc_model","params:training_parameters", "data_loader_train", "soc_weights"],
                 outputs="trained_soc_model",
                 name="train_soc_model_node"
             ),
             node(
                 func=train_single_model,
-                inputs=["pt_model", "params:pretrained", "data_loader_train", "pt_weights", "trained_soc_model"],
+                inputs=["pt_model", "params:pt_model", "params:training_parameters","data_loader_train", "pt_weights", "trained_soc_model"],
                 outputs="trained_pt_model",
                 name="train_pt_model_node"
             ),
 
-            node(
-                func=train_single_model,
-                inputs=["llt_model", "params:pretrained", "data_loader_train", "llt_weights", "trained_soc_model", "trained_pt_model"],
-                outputs="trained_llt_model",
-                name="train_llt_model_node"
-            )
+            # node(
+            #     func=train_single_model,
+            #     inputs=["llt_model", "params:pretrained", "data_loader_train", "llt_weights", "trained_soc_model", "trained_pt_model"],
+            #     outputs="trained_llt_model",
+            #     name="train_llt_model_node"
+            # ),
+            # node(
+            #     func=save_model,
+            #     inputs=["path","trained_soc_model", "trained_pt_model", "trained_llt_model"],
+            #     outputs="trained_llt_model",
+            #     name="train_llt_model_node"
+        
+            # )
 
         ]
     )

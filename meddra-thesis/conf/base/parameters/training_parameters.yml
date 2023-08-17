@@ -1,0 +1,20 @@
+training_parameters:
+  cols: ["soc", "pt", "llt"]
+  batch_size : 512
+  tokenizer_path: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
+  learning_rate : 0.00003
+soc_model:
+  path: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
+  model_name: 'soc'
+  epochs: 1
+
+pt_model:
+  path: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
+  model_name: 'pt'
+  epochs: 1
+  complexity: 1
+llt_model:
+  path: "bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12"
+  model_name: 'ltl'
+  epochs: 1
+  complexity: 2

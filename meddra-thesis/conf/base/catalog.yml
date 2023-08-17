@@ -37,7 +37,7 @@ preprocess_post_data_text_pre:
 #   filepath: data/01_raw/updated_sheet.csv
 train_post_data_text_pre:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/train_post_data_text_pre.csv
+  filepath: data/03_primary/updated_sheet_aug.csv
 test_post_data_text_pre:
   type: pandas.CSVDataSet
   filepath: data/03_primary/test_post_data_text_pre.csv

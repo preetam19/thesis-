@@ -13,19 +13,20 @@ from collections import Counter
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def create_base_model(params, weights):
-    model_name = params["model_name"]
-    pretrained_model_instance = AutoModel.from_pretrained(model_name, output_hidden_states=True)
-    return BaseModel(copy.deepcopy(pretrained_model_instance), len(weights))
-
-def create_extended_model(params, weights, *prev_weights):
-    model_name = params["model_name"]
-    complexity = params["complexity"]
-    pretrained_model = AutoModel.from_pretrained(model_name, output_hidden_states=True)
-    num_labels = len(weights)
+def create_base_model(config, weights):
+    model_path = config["path"]
+    pretrained_model_instance = AutoModel.from_pretrained(model_path, output_hidden_states=True)
+    model_initialized = BaseModel(copy.deepcopy(pretrained_model_instance), len(weights))
+    model_initialized.name = config["model_name"]
+    return model_initialized
+def create_extended_model(config, weights, *prev_weights):
+    model_path = config["path"]
+    complexity = config["complexity"]
+    pretrained_model = AutoModel.from_pretrained(model_path, output_hidden_states=True)
     prev_label_nums = [len(weight) for weight in prev_weights]
-    
-    return GeneralExtendedModel(copy.deepcopy(pretrained_model), num_labels,complexity, *prev_label_nums)
+    model_initialized = GeneralExtendedModel(copy.deepcopy(pretrained_model), len(weights),complexity, *prev_label_nums)
+    model_initialized.name = config["model_name"]
+    return model_initialized
 
 
 def calculate_weights(df, config):
@@ -41,17 +42,20 @@ def calculate_weights(df, config):
 
 
 
-def training_init(model, label_weight):
+def training_init(model, label_weight, lr):
     print(f'training_init device: {device}')
+    print(f'len of label_weights is {len(label_weight)}')
     weights = torch.FloatTensor(label_weight).to(device)
+    print(f'len of weights is {len(weights)}')
+
     loss_fn = nn.CrossEntropyLoss(weight=weights).to(device)
-    optim = torch.optim.RMSprop(model.parameters(), lr=3e-5)
+    optim = torch.optim.RMSprop(model.parameters(), lr=lr)
     return  loss_fn, optim
 
-def train_single_model(model, config, data_loader_train, label_weight, *eval_models):
+def train_single_model(model, config_model, config_train, data_loader_train, label_weight, *eval_models):
     eval_models_list = list(eval_models)
-    loss_fn, optim = training_init(model, label_weight=label_weight)
-    epochs = config['epochs']
+    loss_fn, optim = training_init(model, label_weight=label_weight,lr= config_train['learning_rate'])
+    epochs = config_model['epochs']
     model.to(device)
     print(f'model_train script soc model is sent to {device}')
     model.train()
@@ -63,8 +67,9 @@ def train_single_model(model, config, data_loader_train, label_weight, *eval_mod
             input_ids = torch.squeeze(batch["input_ids"], (1)).to(device)
             attention_mask = torch.squeeze(batch["attention_mask"], (1)).to(device)
             token_type_ids = torch.squeeze(batch["token_type_ids"], (1)).to(device)
-            labels = batch['soc_label'].to(device)
-            
+            labels = batch[f'{model.name}_label'].to(device)
+            print(f'labels min and max values are {labels.min()}, {labels.max()}')
+
             pooled_outputs = []
             if eval_models_list:
                 concatenated_pooled_outputs = None
@@ -74,16 +79,19 @@ def train_single_model(model, config, data_loader_train, label_weight, *eval_mod
                         _, _, pooled_output_eval = eval_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
                     else:
                         _, _, pooled_output_eval = eval_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, prev_logits=concatenated_pooled_outputs)
-                    
                     pooled_outputs.append(pooled_output_eval)
                     concatenated_pooled_outputs = torch.cat(pooled_outputs, dim=-1)
-                
+                    print(f'{eval_model.name} eval model is')
+                print(model.name)
                 _, outputs, _ = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, prev_logits=concatenated_pooled_outputs)
             else:
                 _, outputs, _ = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
             
             _, preds = torch.max(outputs, dim=1)
             correct_predictions += torch.sum(preds == labels)
+            print(f"Shape of labels: {labels.shape}")
+            print(f"Shape of input_ids: {input_ids.shape}")
+            print(f"Shape of outputs: {outputs.shape}")
             loss = loss_fn(outputs, labels)
 
             loss.backward()
@@ -93,6 +101,14 @@ def train_single_model(model, config, data_loader_train, label_weight, *eval_mod
     print(f'Predicted {correct_predictions} labels correctly')
     return model
 
+# def save_model(path, *models):
+#     eval_models_list = list(models)
+#     path = f"trained_model.pt"
+#     torch.save({
+#         'model_soc_state_dict': soc_trained.state_dict(),
+#         'model_pt_state_dict': pt_trained.state_dict(),
+#         'model_llt_state_dict' :llt_trained.state_dict()
+#         }, path)
 
 
 
