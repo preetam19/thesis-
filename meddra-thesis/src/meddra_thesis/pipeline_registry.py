@@ -7,8 +7,7 @@ from meddra_thesis.pipelines.data_pre import data_aug as daug
 from meddra_thesis.pipelines.data_pre import data_abb as dabb
 from meddra_thesis.pipelines.data_pre import text_pre as dtxt
 from meddra_thesis.pipelines.model_training import create_pipeline as model_training_pipeline
-from meddra_thesis.pipelines.model_training import create_pipeline as model_evaluation_pipeline
-# from meddra_thesis.pipelines.tokenization import create_tok_pipeline 
+from meddra_thesis.pipelines.model_eval import create_pipeline as model_evaluation_pipeline
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.

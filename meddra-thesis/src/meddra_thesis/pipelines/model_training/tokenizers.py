@@ -45,11 +45,11 @@ class MeddraDataset(Dataset):
         }
 
 
-def prepare_meddra_dataset(df_train, config):
-    df_train = pd.DataFrame(df_train)
+def prepare_meddra_dataset(df, config):
+    df = pd.DataFrame(df)
     tokenizer = AutoTokenizer.from_pretrained(config['tokenizer_path'])
-    df_train_array = df_train.to_numpy()
-    return MeddraDataset(df_train_array, tokenizer)
+    df_array = df.to_numpy()
+    return MeddraDataset(df_array, tokenizer), len(df_array)
 
 
 def create_dataloader(dataset, config):

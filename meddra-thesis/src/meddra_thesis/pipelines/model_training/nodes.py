@@ -19,6 +19,7 @@ def create_base_model(config, weights):
     model_initialized = BaseModel(copy.deepcopy(pretrained_model_instance), len(weights))
     model_initialized.name = config["model_name"]
     return model_initialized
+    
 def create_extended_model(config, weights, *prev_weights):
     model_path = config["path"]
     complexity = config["complexity"]
