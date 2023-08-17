@@ -27,6 +27,7 @@ def create_extended_model(config, weights, *prev_weights):
     prev_label_nums = [len(weight) for weight in prev_weights]
     model_initialized = GeneralExtendedModel(copy.deepcopy(pretrained_model), len(weights),complexity, *prev_label_nums)
     model_initialized.name = config["model_name"]
+
     return model_initialized
 
 
@@ -79,7 +80,6 @@ def train_single_model(model, config_model, config_train, data_loader_train, lab
                         _, _, pooled_output_eval = eval_model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, prev_logits=concatenated_pooled_outputs)
                     pooled_outputs.append(pooled_output_eval)
                     concatenated_pooled_outputs = torch.cat(pooled_outputs, dim=-1)
-                    print(f'{eval_model.name} eval model is')
                 _, outputs, _ = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, prev_logits=concatenated_pooled_outputs)
             else:
                 _, outputs, _ = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
@@ -104,7 +104,9 @@ def save_model(config, *models):
 
 
 
-
+def checkpoint(*args):
+    """A simple checkpoint function that does nothing but ensures ordering."""
+    pass
 
 
 

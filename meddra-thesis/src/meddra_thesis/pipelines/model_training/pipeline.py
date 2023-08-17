@@ -1,5 +1,5 @@
 from kedro.pipeline import Pipeline, node
-from .nodes import create_extended_model, train_single_model, calculate_weights, create_base_model, save_model
+from .nodes import create_extended_model, train_single_model, calculate_weights, create_base_model,checkpoint, save_model
 from functools import partial
 from .tokenizers import prepare_meddra_dataset, create_dataloader
 def create_pipeline(**kwargs):
@@ -27,7 +27,7 @@ def create_pipeline(**kwargs):
             node(
                 func=prepare_meddra_dataset,
                 inputs=["train_post_data_text_pre", "params:training_parameters"],  
-                outputs="meddra_dataset_train",
+                outputs=["meddra_dataset_train", "len_array_train"],
                 name="prepare_meddra_dataset_node"
                 ),
             node(
@@ -73,7 +73,13 @@ def create_pipeline(**kwargs):
                 outputs=None,
                 name="save_model_none"
         
-            )
+            ),
+            node(
+            func=checkpoint,
+            inputs=["trained_soc_model", "trained_pt_model", "trained_llt_model"],
+            outputs="checkpoint_output",
+            name="checkpoint_node"
+        )
 
         ]
     )

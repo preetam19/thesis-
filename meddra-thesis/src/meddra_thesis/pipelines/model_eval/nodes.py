@@ -21,11 +21,6 @@ def load_model_weights(config, *models):
 
 
 
-def forward_pass(model, input_data):
-    input_ids, attention_mask, token_type_ids = input_data
-    outputs, _, _ = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
-    _, preds = torch.max(outputs, dim=1)
-    return preds
 
 def compute_metrics(true_labels, predicted_labels):
     metrics = {
@@ -37,19 +32,6 @@ def compute_metrics(true_labels, predicted_labels):
         "recall_macro": recall_score(true_labels, predicted_labels, average='macro')
     }
     return metrics
-
-def eval_model_with_dependencies(model, input_data, *pooled_outputs_from_prev_models):
-    input_ids, attention_mask, token_type_ids = input_data
-    concatenated_pooled_outputs = None
-
-    if pooled_outputs_from_prev_models:
-        concatenated_pooled_outputs = torch.cat(pooled_outputs_from_prev_models, dim=-1)
-        _, outputs, pooled_output = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, prev_logits=concatenated_pooled_outputs)
-    else:
-        _, outputs, pooled_output = model(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
-    
-    _, preds = torch.max(outputs, dim=1)
-    return preds, pooled_output
 
 def eval_loop(test_dataloader, len_array, models):
     device = torch.device("cuda")
@@ -86,7 +68,6 @@ def eval_loop(test_dataloader, len_array, models):
                 results[model_name]['true_labels'].extend(true_labels.cpu().numpy())
                 results[model_name]['pred_labels'].extend(preds.cpu().numpy())
 
-    # Calculate metrics for each model
     for model in models:
         model_name = model.name
         accuracy = sum(results[model_name]['correct_predictions']) / len_array
