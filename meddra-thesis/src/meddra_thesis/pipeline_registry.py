@@ -7,6 +7,7 @@ from meddra_thesis.pipelines.data_pre import data_aug as daug
 from meddra_thesis.pipelines.data_pre import data_abb as dabb
 from meddra_thesis.pipelines.data_pre import text_pre as dtxt
 from meddra_thesis.pipelines.model_training import create_pipeline as model_training_pipeline
+from meddra_thesis.pipelines.model_training import create_pipeline as model_evaluation_pipeline
 # from meddra_thesis.pipelines.tokenization import create_tok_pipeline 
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -27,5 +28,6 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "data_aug": pipeline_aug,
         "data_txt": pipeline_txt,
         "model_training": model_training_pipeline(),
+        "model_evaluation": model_evaluation_pipeline(),
         "__default__": default_pipeline
     }

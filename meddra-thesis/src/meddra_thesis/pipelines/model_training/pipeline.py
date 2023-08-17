@@ -1,5 +1,5 @@
 from kedro.pipeline import Pipeline, node
-from .nodes import create_extended_model, train_single_model, calculate_weights, create_base_model
+from .nodes import create_extended_model, train_single_model, calculate_weights, create_base_model, save_model
 from functools import partial
 from .tokenizers import prepare_meddra_dataset, create_dataloader
 def create_pipeline(**kwargs):
@@ -42,12 +42,12 @@ def create_pipeline(**kwargs):
                 outputs="pt_model",
                 name="create_pt_model_node"
             ),
-            # node(
-            #     func=create_extended_model,
-            #     inputs=["params:llt_model", "llt_weights", "pt_weights", "soc_weights"],
-            #     outputs="llt_model",
-            #     name="create_llt_model_node"
-            # ),
+            node(
+                func=create_extended_model,
+                inputs=["params:llt_model", "llt_weights", "pt_weights", "soc_weights"],
+                outputs="llt_model",
+                name="create_llt_model_node"
+            ),
             node(
                 func=train_single_model,
                 inputs=["soc_model", "params:soc_model","params:training_parameters", "data_loader_train", "soc_weights"],
@@ -61,19 +61,19 @@ def create_pipeline(**kwargs):
                 name="train_pt_model_node"
             ),
 
-            # node(
-            #     func=train_single_model,
-            #     inputs=["llt_model", "params:pretrained", "data_loader_train", "llt_weights", "trained_soc_model", "trained_pt_model"],
-            #     outputs="trained_llt_model",
-            #     name="train_llt_model_node"
-            # ),
-            # node(
-            #     func=save_model,
-            #     inputs=["path","trained_soc_model", "trained_pt_model", "trained_llt_model"],
-            #     outputs="trained_llt_model",
-            #     name="train_llt_model_node"
+            node(
+                func=train_single_model,
+                inputs=["llt_model", "params:llt_model", "params:training_parameters","data_loader_train", "llt_weights", "trained_soc_model", "trained_pt_model"],
+                outputs="trained_llt_model",
+                name="train_llt_model_node"
+            ),
+            node(
+                func=save_model,
+                inputs=["params:training_parameters","trained_soc_model", "trained_pt_model", "trained_llt_model"],
+                outputs=None,
+                name="save_model_none"
         
-            # )
+            )
 
         ]
     )
