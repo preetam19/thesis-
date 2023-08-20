@@ -32,7 +32,7 @@ def create_pipeline(**kwargs):
                 ),
             node(
                 func=create_dataloader,
-                inputs=["meddra_dataset_train", "params:training_parameters"],  # Assuming you have DataLoader config in params
+                inputs=["meddra_dataset_train", "params:training_parameters"],  
                 outputs="data_loader_train",
                 name="create_dataloader_node"
             ),

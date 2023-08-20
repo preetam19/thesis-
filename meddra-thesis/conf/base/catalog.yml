@@ -2,22 +2,35 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
-
-train_data:
+raw_data: 
   type: pandas.CSVDataSet
   filepath: data/01_raw/updated_sheet.csv
 train_data_llt:
   type: pandas.CSVDataSet
   filepath: data/01_raw/llt.csv
-post_data_train:
+
+
+merged_raw_data:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/df.csv
-post_data_test:
+
+
+abbreviated_data:
   type: pandas.CSVDataSet
-  filepath: data/02_intermediate/df.csv
-post_data_text_pre:
+  filepath: data/02_intermediate/df_abbreviated.csv
+
+pre_processed_data:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/df_tx_pre.csv
+
+
+
+train_post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/df_train.csv
+test_post_data_text_pre:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/df_test.csv
 data_aug:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/df_aug.csv
@@ -35,12 +48,7 @@ preprocess_post_data_text_pre:
 # eval_data_1_2:
 #   type: pandas.CSVDataSet
 #   filepath: data/01_raw/updated_sheet.csv
-train_post_data_text_pre:
-  type: pandas.CSVDataSet
-  filepath: data/03_primary/updated_sheet_aug.csv
-test_post_data_text_pre:
-  type: pandas.CSVDataSet
-  filepath: data/03_primary/test_post_data_text_pre.csv
+
 train_dataset:
   type: kedro.extras.datasets.pickle.PickleDataSet
   filepath: data/03_primary/train_dataset.pkl

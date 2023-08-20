@@ -11,7 +11,7 @@ def create_data_abbreviation_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=data_abb,
-                inputs= ['post_data_train' , 'params:data_abbreviation'],
+                inputs= ['merged_raw_data' , 'params:data_abbreviation'],
                 outputs="abbreviated_data",
                 name="data_abbreviation_node",
             ),

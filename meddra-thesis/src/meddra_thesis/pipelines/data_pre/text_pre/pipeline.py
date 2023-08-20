@@ -8,33 +8,31 @@ from .nodes import (
     remove_special_characters_from_column
 )
 
-def create_generic_pipeline(input_data_name, prefix):
+
+def create_preprocessing_pipeline(**kwargs) -> Pipeline:    
+    
     return Pipeline([
         node(
             func=partial(encode_labels, columns=['soc', 'pt', 'llt']),
-            inputs=input_data_name,
-            outputs=f"{prefix}_encoded_data",
-            name=f"{prefix}_encode_labels_node"
+            inputs="abbreviated_data",
+            outputs=f"text_pre_encoded_data",
+            name=f"text_pre_encode_labels_node"
         ),
         node(
             func=partial(lowercase_text, column='llt_term'),
-            inputs=f"{prefix}_encoded_data",
-            outputs=f"{prefix}_encoded_data_lower",
-            name=f"{prefix}_lowercase_text_node"
+            inputs=f"text_pre_encoded_data",
+            outputs=f"text_pre_encoded_data_lower",
+            name=f"text_pre_lowercase_text_node"
         ),
         node(
             func=partial(remove_special_characters_from_column, column='llt_term'),
-            inputs=f"{prefix}_encoded_data_lower",
-            outputs=f"{prefix}_post_data_text_pre",
-            name=f"{prefix}_remove_special_characters_node"
+            inputs=f"text_pre_encoded_data_lower",
+            outputs=f"pre_processed_data",
+            name=f"text_pre_remove_special_characters_node"
         )
-    ])
+    ]
+    )
 
-def create_preprocessing_pipeline(**kwargs) -> Pipeline:
-
-    pipeline = create_generic_pipeline('post_data_train', 'preprocess')
-
-    return pipeline 
 
 
 

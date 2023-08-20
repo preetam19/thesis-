@@ -17,7 +17,7 @@ def create_aug_pipeline(**kwargs) -> Pipeline:
             node(
                 func=partial(data_augment, col_name = 'llt_term', k =2, sample_frac =1.0),
                 inputs={
-                    "df": "preprocess_post_data_text_pre",
+                    "df": "pre_processed_data",
                     "augment_config": "params:augmentation",
                 },
                 outputs="data_aug",

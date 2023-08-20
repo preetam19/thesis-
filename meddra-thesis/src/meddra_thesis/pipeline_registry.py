@@ -15,14 +15,14 @@ def register_pipelines() -> Dict[str, Pipeline]:
     Returns:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
-    pipeline_aug = daug.create_aug_pipeline()
     pipeline_dint_abb = dabb.create_data_abbreviation_pipeline()
     pipeline_txt = dtxt.create_preprocessing_pipeline()
-    # pipeline_tok = create_tok_pipeline()
-    # Concatenate the pipelines to make them run sequentially
-    default_pipeline = pipeline_dint_abb +pipeline_txt +  pipeline_aug 
+    pipeline_aug = daug.create_aug_pipeline()
+    data_pipeline = pipeline_dint_abb + pipeline_txt + pipeline_aug
     model_train = model_training_pipeline()
     model_evaluate = model_evaluation_pipeline()
+    default_pipeline = model_train + model_evaluate 
+
     return {
         "data_abb": pipeline_dint_abb,
         "data_aug": pipeline_aug,
@@ -30,5 +30,4 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "data_txt": pipeline_txt,
         "model_training": model_train,
         "model_evaluation": model_evaluate,
-        "__default__": default_pipeline
-    }
+        "__default__": default_pipeline   }
