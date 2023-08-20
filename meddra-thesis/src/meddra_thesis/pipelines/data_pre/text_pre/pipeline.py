@@ -9,31 +9,46 @@ from .nodes import (
 )
 
 
-def create_preprocessing_pipeline(**kwargs) -> Pipeline:    
-    
+from functools import partial
+from kedro.pipeline import Pipeline
+from kedro.pipeline.node import node
+
+def create_preprocessing_pipeline(**kwargs) -> Pipeline:
+    """
+    Create a pipeline for the text preprocessing process.
+
+    This pipeline chains multiple text preprocessing nodes:
+    1. Encodes labels for the columns 'soc', 'pt', and 'llt'.
+    2. Converts the 'llt_term' column text to lowercase.
+    3. Removes special characters from the 'llt_term' column.
+
+    Parameters:
+    - **kwargs: Additional keyword arguments (not currently used in this function).
+
+    Returns:
+    - Pipeline: Kedro pipeline for text preprocessing.
+    """
+
     return Pipeline([
         node(
-            func=partial(encode_labels, columns=['soc', 'pt', 'llt']),
+            func=partial(encode_labels, columns=['soc', 'pt', 'llt']),  # Label encoding node
             inputs="abbreviated_data",
             outputs=f"text_pre_encoded_data",
             name=f"text_pre_encode_labels_node"
         ),
         node(
-            func=partial(lowercase_text, column='llt_term'),
+            func=partial(lowercase_text, column='llt_term'),  # Lowercase conversion node
             inputs=f"text_pre_encoded_data",
             outputs=f"text_pre_encoded_data_lower",
             name=f"text_pre_lowercase_text_node"
         ),
         node(
-            func=partial(remove_special_characters_from_column, column='llt_term'),
+            func=partial(remove_special_characters_from_column, column='llt_term'),  # Special characters removal node
             inputs=f"text_pre_encoded_data_lower",
             outputs=f"pre_processed_data",
             name=f"text_pre_remove_special_characters_node"
         )
-    ]
-    )
-
-
+    ])
 
 
 

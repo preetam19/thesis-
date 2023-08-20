@@ -9,6 +9,16 @@ import torch
 
 
 def load_model_weights(config, *models):
+    """
+    Loads the pre-trained weights for the provided models from a saved state.
+
+    Parameters:
+    - config: Dictionary containing the path to the saved model weights.
+    - *models: Models for which weights need to be loaded.
+
+    Returns:
+    - List of models with their weights loaded.
+    """
     state_dicts = torch.load(config['save_model_path'])
     
     loaded_models = list(models)
@@ -23,6 +33,17 @@ def load_model_weights(config, *models):
 
 
 def compute_metrics(true_labels, predicted_labels):
+    """
+    Computes multiple classification metrics like F1 score, precision, and recall 
+    for the provided true and predicted labels.
+
+    Parameters:
+    - true_labels: Actual labels of the data.
+    - predicted_labels: Labels predicted by the model.
+
+    Returns:
+    - Dictionary containing micro and macro averages of F1 score, precision, and recall.
+    """
     metrics = {
         "f1_micro": f1_score(true_labels, predicted_labels, average='micro'),
         "precision_micro": precision_score(true_labels, predicted_labels, average='micro'),
@@ -34,6 +55,19 @@ def compute_metrics(true_labels, predicted_labels):
     return metrics
 
 def eval_loop(test_dataloader, len_array, models):
+    """
+    Evaluates the models using the provided test dataset. Processes the dataset, makes predictions,
+    and collects the results for each model.
+
+    Parameters:
+    - test_dataloader: DataLoader containing the test dataset.
+    - len_array: Provides the length of the dataset used for calculating accuracy.
+    - models: List of models to be evaluated.
+
+    Returns:
+    - Dictionary storing predicted labels, true labels, and correct predictions for each model.
+      Additionally, prints performance metrics to the console.
+    """
     device = torch.device("cuda")
 
     print(f'in model eval device is {device}')

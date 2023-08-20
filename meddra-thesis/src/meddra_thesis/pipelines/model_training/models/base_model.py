@@ -2,6 +2,12 @@ import torch
 import torch.nn as nn
 
 class BaseModel(nn.Module):
+    """ 
+    A base model class that wraps around a pretrained model (e.g., BERT, BIOBERT, BlueBERT) and extends its capabilities 
+    to perform classification tasks. The model's output is passed through a dropout layer for regularization, 
+    a layer normalization for stabilizing the activations, and finally a linear layer to produce logits for 
+    classification. The softmax function then computes the probability distribution of the classes.
+    """
     def __init__(self, pretrained_model, num_labels):
         super(BaseModel, self).__init__()
         self.model = pretrained_model

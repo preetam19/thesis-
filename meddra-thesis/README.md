@@ -1,122 +1,100 @@
 # meddra_thesis
 
-## Overview
 
-This is your new Kedro project, which was generated using `Kedro 0.18.3`.
+This project is master thesis software framework to classify hierchical classifcation. By utilizing kedros framework,  multiple pipelines ranging from data preprocessing to model training and evaluation are designed. This README provides an outline of the necessary steps to set up, run, test, and package your Kedro project.
 
-Take a look at the [Kedro documentation](https://kedro.readthedocs.io) to get started.
+# Setting Up the Project
 
-## Rules and guidelines
+Clone the project into local repo 
 
-In order to get the best out of the template:
+```
 
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a [data engineering convention](https://kedro.readthedocs.io/en/stable/faq/faq.html#what-is-data-engineering-convention)
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
-
-## How to install dependencies
-
-Declare any dependencies in `src/requirements.txt` for `pip` installation and `src/environment.yml` for `conda` installation.
-
-To install them, run:
+```
+To install the necessary dependencies for this project, run:
 
 ```
 pip install -r src/requirements.txt
+
 ```
 
-## How to run your Kedro pipeline
-
-You can run your Kedro project with:
-
+# To execute all the pipelines 
 ```
 kedro run
 ```
-
-## How to test your Kedro project
-
-Have a look at the file `src/tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
-
+# To execute specific pipeline
 ```
-kedro test
+kedro run --pipeline <pipeline_name>
 ```
+# Project Pipelines Overview
 
-To configure the coverage threshold, go to the `.coveragerc` file.
+In this project, multiple pipelines are orchestrated to perform distinct tasks, from data preprocessing to model training and evaluation. Here is a detailed breakdown of the available pipelines and their corresponding functionalities.
 
-## Project dependencies
+## Pipelines
 
-To generate or update the dependency requirements for your project:
+### `data_abb` - Data Abbreviation Pipeline
+**Description:**  
+This pipeline focuses on shortening or simplifying textual data, making it more manageable and straightforward.
 
-```
-kedro build-reqs
-```
+**Associated Pipeline Function:**  
+- `dabb.create_data_abbreviation_pipeline()`
 
-This will `pip-compile` the contents of `src/requirements.txt` into a new file `src/requirements.lock`. You can see the output of the resolution by opening `src/requirements.lock`.
+---
 
-After this, if you'd like to update your project requirements, please update `src/requirements.txt` and re-run `kedro build-reqs`.
+### `data_txt` - Text Preprocessing Pipeline
+**Description:**  
+Processes textual data to enhance its consistency and quality. The pipeline involves tasks such as label encoding, text lowercasing, and removal of special characters.
 
-[Further information about project dependencies](https://kedro.readthedocs.io/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
+**Associated Pipeline Function:**  
+- `dtxt.create_preprocessing_pipeline()`
 
-## How to work with Kedro and notebooks
+---
 
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, `catalog`, and `startup_error`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r src/requirements.txt` you will not need to take any extra steps before you use them.
+### `data_aug` - Data Augmentation Pipeline
+**Description:**  
+Augments the dataset by applying various transformations, ensuring that the model is exposed to varied data patterns during training.
 
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
+**Associated Pipeline Function:**  
+- `daug.create_aug_pipeline()`
 
-```
-pip install jupyter
-```
+---
 
-After installing Jupyter, you can start a local notebook server:
+### `model_training` - Model Training Pipeline
+**Description:**  
+Focuses on training the models based on the cleaned and augmented data, ensuring optimal performance.
 
-```
-kedro jupyter notebook
-```
+**Associated Pipeline Function:**  
+- `model_training_pipeline()`
 
-### JupyterLab
-To use JupyterLab, you need to install it:
+---
 
-```
-pip install jupyterlab
-```
+### `model_evaluation` - Model Evaluation Pipeline
+**Description:**  
+Evaluates the trained models using test datasets, generating performance metrics to gauge model effectiveness.
 
-You can also start JupyterLab:
+**Associated Pipeline Function:**  
+- `model_evaluation_pipeline()`
 
-```
-kedro jupyter lab
-```
+---
 
-### IPython
-And if you want to run an IPython session:
+### `model_pipeline` - Combined Model Training and Evaluation Pipeline
+**Description:**  
+A comprehensive pipeline combining both training and evaluation stages, allowing for an end-to-end execution of model processes.
 
-```
-kedro ipython
-```
+**Associated Pipeline Function:**  
+- Combination of `model_training_pipeline()` and `model_evaluation_pipeline()`
 
-### How to convert notebook cells to nodes in a Kedro project
-You can move notebook code over into a Kedro project structure using a mixture of [cell tagging](https://jupyter-notebook.readthedocs.io/en/stable/changelog.html#release-5-0-0) and Kedro CLI commands.
+---
 
-By adding the `node` tag to a cell and running the command below, the cell's source code will be copied over to a Python file within `src/<package_name>/nodes/`:
+### `__default__` - Default Pipeline
+**Description:**  
+The default pipeline set for the project, which constitutes both the training and evaluation of models.
 
-```
-kedro jupyter convert <filepath_to_my_notebook>
-```
-> *Note:* The name of the Python file matches the name of the original notebook.
+**Associated Pipeline Function:**  
+- Summation of `model_training_pipeline()` and `model_evaluation_pipeline()`
 
-Alternatively, you may want to transform all your notebooks in one go. Run the following command to convert all notebook files found in the project root directory and under any of its sub-folders:
+---
 
-```
-kedro jupyter convert --all
-```
+## Usage
 
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can run `kedro activate-nbstripout`. This will add a hook in `.git/config` which will run `nbstripout` before anything is committed to `git`.
+To invoke a particular pipeline, simply select its corresponding name when running the project. This allows for modularity and flexibility, as different stages of the project can be executed independently or in a sequence.
 
-> *Note:* Your output cells will be retained locally.
-
-## Package your Kedro project
-
-[Further information about building project documentation and packaging your project](https://kedro.readthedocs.io/en/stable/tutorial/package_a_project.html)

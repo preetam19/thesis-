@@ -3,11 +3,6 @@ from .nodes import create_extended_model, train_single_model, calculate_weights,
 from functools import partial
 from .tokenizers import prepare_meddra_dataset, create_dataloader
 def create_pipeline(**kwargs):
-    # train_partial = partial(
-    # train_models,
-    # models=["soc_model", "pt_model", "llt_model"],
-    # label_weights=[kwargs["params:pretrained"], kwargs["params:pretrained"], kwargs["params:pretrained"]]
-    # )
     return Pipeline(
         [ 
         node(

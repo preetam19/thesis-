@@ -14,6 +14,10 @@ from collections import Counter
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def create_base_model(config, weights):
+    """
+    Creates and initializes a base model by loading a pretrained model (e.g., BERT, RoBERTa)
+    and then wraps it using the BaseModel class. The resultant model is tailored for classification tasks.
+    """
     model_path = config["path"]
     pretrained_model_instance = AutoModel.from_pretrained(model_path, output_hidden_states=True)
     model_initialized = BaseModel(copy.deepcopy(pretrained_model_instance), len(weights))
@@ -21,6 +25,11 @@ def create_base_model(config, weights):
     return model_initialized
     
 def create_extended_model(config, weights, *prev_weights):
+    """
+    Creates and initializes an extended model tailored for multi-task learning scenarios. The function
+    loads a pretrained model, computes the number of labels from previous tasks, and wraps it using the
+    GeneralExtendedModel class.
+    """
     model_path = config["path"]
     complexity = config["complexity"]
     pretrained_model = AutoModel.from_pretrained(model_path, output_hidden_states=True)
@@ -32,6 +41,10 @@ def create_extended_model(config, weights, *prev_weights):
 
 
 def calculate_weights(df, config):
+    """
+    Computes the class weights for specified columns in the dataframe. The function calculates
+    the relative frequency of each class in the columns and returns them as weights.
+    """
     weights = {}
     for col in config['cols']:
         label_list = df[col].values
@@ -45,6 +58,10 @@ def calculate_weights(df, config):
 
 
 def training_init(model, label_weight, lr):
+    """
+    Initializes the loss function and optimizer for model training. CrossEntropyLoss with 
+    the given label weights is used as the loss function, and RMSprop is chosen as the optimizer.
+    """
 
     weights = torch.FloatTensor(label_weight).to(device)
 
@@ -53,6 +70,11 @@ def training_init(model, label_weight, lr):
     return  loss_fn, optim
 
 def train_single_model(model, config_model, config_train, data_loader_train, label_weight, *eval_models):
+    """
+    Trains a given model on provided data for a set number of epochs. If there are evaluation models
+    provided, their outputs (logits) are concatenated and passed as an additional input to the current
+    model, facilitating multi-task learning.
+    """
     eval_models_list = list(eval_models)
     loss_fn, optim = training_init(model, label_weight=label_weight,lr= config_train['learning_rate'])
     epochs = config_model['epochs']
@@ -97,6 +119,10 @@ def train_single_model(model, config_model, config_train, data_loader_train, lab
     return model
 
 def save_model(config, *models):
+    """
+    Saves the state dictionaries of provided models to a specified file path. This allows for
+    re-loading and re-using trained models at a later stage.
+    """
     state_dicts = {}
     for model in models:
         state_dicts[f'model_{model.name}_state_dict'] = model.state_dict()

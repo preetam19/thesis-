@@ -12,10 +12,20 @@ from .nodes import  data_augment, shuffle_text, synonyms_replacement, crop_text,
 
 
 def create_aug_pipeline(**kwargs) -> Pipeline:
+    """
+    Create a pipeline for data augmentation and dataset splitting.
+
+    This pipeline chains data augmentation node and dataset split node:
+    1. Augments the data based on the specified configuration.
+    2. Splits the augmented data into training and testing datasets.
+
+    Returns:
+    - Pipeline: Kedro pipeline for data augmentation.
+    """
     return Pipeline(
         [
             node(
-                func=partial(data_augment, col_name = 'llt_term', k =2, sample_frac =1.0),
+                func=partial(data_augment, col_name='llt_term', k=2, sample_frac=1.0),
                 inputs={
                     "df": "pre_processed_data",
                     "augment_config": "params:augmentation",
@@ -34,17 +44,3 @@ def create_aug_pipeline(**kwargs) -> Pipeline:
             )
         ]
     )
-
-
-
-
-
-
-    # return pipeline([
-    #     node(
-    #         func=functools.partial(data_augmentation,k=2, sample_frac=1.0),
-    #         inputs={'df':'post_data'},
-    #         outputs="data_aug",
-    #         name="data_augmented",
-    #         )
-    #         ])
